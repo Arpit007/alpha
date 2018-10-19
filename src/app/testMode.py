@@ -26,7 +26,7 @@ def run():
 	keys = dataset.DATASETS.keys()
 	if MULTI_TYPE_TEST is False:
 		keys = keys[:1]
-		
+	
 	for key in keys:
 		pprint("Testing for %s" % key, symbolCount = 15)
 		
@@ -57,11 +57,15 @@ def run():
 		# Calculating Pearson Scores
 		start_time = time.time()
 		pprint('Calculating Pearson Scores')
+		
+		# Get Users Average Rating
+		avgRating = rating.getUsersAverageRating(ratingTable)
+		
 		pearsonScores = scores.calcAllPearson(ratingTable)
 		
 		# Calculating Personality Scores
 		pprint('Calculating Personality Scores')
-		personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList)
+		personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList, avgRating)
 		
 		# Calculating Pearson Personality Scores
 		pprint('Calculating Pearson Personality Scores')
@@ -69,18 +73,13 @@ def run():
 		
 		pprint("Scores Calculated in %.4f seconds" % (time.time() - start_time))
 		
-		# Get Users Average Rating
-		usersAvgRating = rating.getUsersAverageRating(ratingTable)
-		
 		# Calculating Ratings
 		pprint('Calculating Ratings & Test Scores')
 		start_time = time.time()
 		
-		testRatingList['pearson'] = rating.predictTestRatings(testRatingList, ratingTable, pearsonScores,
-		                                                      usersAvgRating)
+		testRatingList['pearson'] = rating.predictTestRatings(testRatingList, ratingTable, pearsonScores, avgRating)
 		testRatingList['personality'] = rating.predictTestRatings(testRatingList, ratingTable,
-		                                                          pearsonPersonalityScores,
-		                                                          usersAvgRating)
+		                                                          pearsonPersonalityScores, avgRating)
 		
 		# Tests
 		testLabels = ['Specificity', 'Precision', 'Recall', 'Accuracy', 'MAE', 'RMSE']

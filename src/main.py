@@ -3,8 +3,8 @@ import sys
 
 """
 Run Modes:
-Test Mode:  For Testing
-Interactive Mode: For User Interaction
+TEST_MODE:  For Testing
+INTERACTIVE_MODE: For User Interaction
 """
 
 APP_MODES = {

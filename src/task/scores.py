@@ -66,7 +66,7 @@ def calcAllPearson(ratingTable):
 	return pearsonScoresFrame
 
 
-def personalityScore(user1, user2, persScores):
+def personalityScore(user1, user2, persScores, avgRating):
 	if user1 == user2:
 		return 0.0
 	
@@ -82,10 +82,11 @@ def personalityScore(user1, user2, persScores):
 	
 	for r1, r2 in zip(u1Scores, u2Scores):
 		tr1 = r1 - user1Avg
-		tr2 = r2 - user2Avg
+		tr2 = r2 - avgRating.loc[user2, 'avgRating']
+		tr3 = r2 - user2Avg
 		top += tr1 * tr2
 		bottom1 += tr1 ** 2
-		bottom2 += tr2 ** 2
+		bottom2 += tr3 ** 2
 	
 	bottom = bottom1 * bottom2
 	bottom = np.sqrt(bottom)
@@ -98,16 +99,16 @@ def personalityScore(user1, user2, persScores):
 	return score
 
 
-def personalityScores(userId, ratingTable, persScores):
-	pScores = ratingTable.columns.map(lambda user: personalityScore(userId, user, persScores))
+def personalityScores(userId, ratingTable, persScores, avgRating):
+	pScores = ratingTable.columns.map(lambda user: personalityScore(userId, user, persScores, avgRating))
 	
 	return pScores
 
 
-def calcAllPersonalityScore(ratingTable, persScores):
+def calcAllPersonalityScore(ratingTable, persScores, avgRating):
 	personalityScoresFrame = pd.DataFrame(index = ratingTable.columns)
 	for i in ratingTable.columns:
-		personalityScoresFrame[i] = personalityScores(i, ratingTable, persScores)
+		personalityScoresFrame[i] = personalityScores(i, ratingTable, persScores, avgRating)
 	
 	return personalityScoresFrame
 

@@ -45,20 +45,21 @@ def run():
 	# Calculating Pearson Scores
 	start_time = time.time()
 	pprint('Calculating Pearson Scores')
+	
+	# Get Users Average Rating
+	avgRating = rating.getUsersAverageRating(ratingTable)
+	
 	pearsonScores = scores.calcAllPearson(ratingTable)
 	
 	# Calculating Personality Scores
 	pprint('Calculating Personality Scores')
-	personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList)
+	personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList, avgRating)
 	
 	# Calculating Pearson Personality Scores
 	pprint('Calculating Pearson Personality Scores')
 	pearsonPersonalityScores = scores.calcPearsonPersonality(pearsonScores, personalityScores)
 	
 	pprint("Scores Calculated in %.4f seconds" % (time.time() - start_time))
-	
-	# Get Users Average Rating
-	usersAvgRating = rating.getUsersAverageRating(ratingTable)
 	
 	while True:
 		# Get userId
@@ -76,7 +77,7 @@ def run():
 			# Calculating Suggestion Ratings
 			userRatings = users.getUserItems(userId, cityId, ratingList, ratingTable)
 			userRatings['rating'] = rating.getOrCalculateUserItemRating(userId, userRatings, ratingTable,
-			                                                            pearsonPersonalityScores, usersAvgRating)
+			                                                            pearsonPersonalityScores, avgRating)
 			userRatings = userRatings.sort_values('rating', ascending = False)[:SUGGESTIONS_COUNT]
 			
 			# Suggest Items
