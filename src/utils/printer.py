@@ -1,4 +1,4 @@
-def pprint(str, sep = '\t', sepCount = 1, symbol = '*', symbolCount = 3):
+def pprint(str, sep = '\t', sepCount = 0, symbol = '*', symbolCount = 0):
 	"""
 	Pretty Print the String
 	"""

@@ -28,7 +28,7 @@ def run():
 		keys = keys[:1]
 	
 	for key in keys:
-		pprint("Testing for %s" % key, symbolCount = 15)
+		pprint("Testing for %s" % key, symbolCount = 15, sepCount = 1)
 		
 		# Load the Datasets
 		ratingList = dataset.getRatingsList(key)
@@ -52,7 +52,7 @@ def run():
 		
 		ratingTable = dataset.getRatingTable(trainRatingList)
 		sparsity = len(trainRatingList) / np.prod(ratingTable.shape)
-		pprint("Sparsity: %f%%" % float(sparsity * 100))
+		pprint("-> Sparsity: %f%%" % float(sparsity * 100))
 		
 		# Calculating Pearson Scores
 		start_time = time.time()
@@ -71,7 +71,7 @@ def run():
 		pprint('Calculating Pearson Personality Scores')
 		pearsonPersonalityScores = scores.calcPearsonPersonality(pearsonScores, personalityScores)
 		
-		pprint("Scores Calculated in %.4f seconds" % (time.time() - start_time))
+		pprint("-> Scores Calculated in %.4f seconds" % (time.time() - start_time))
 		
 		# Calculating Ratings
 		pprint('Calculating Ratings & Test Scores')
@@ -82,7 +82,7 @@ def run():
 		                                                          pearsonPersonalityScores, avgRating)
 		
 		# Tests
-		testLabels = ['Specificity', 'Precision', 'Recall', 'Accuracy', 'MAE', 'RMSE']
+		testLabels = ['Specificity', 'Precision', 'Recall  ', 'Accuracy', 'MAE     ', 'RMSE     ']
 		pearsonTest = metrics.specificity_precision_recall_accuracy(testRatingList['rating'], testRatingList[
 			'pearson'])
 		personalityTest = metrics.specificity_precision_recall_accuracy(testRatingList['rating'],
@@ -94,11 +94,12 @@ def run():
 		personalityTest.append(metrics.mae(testRatingList['rating'], testRatingList['personality']))
 		personalityTest.append(metrics.rmse(testRatingList['rating'], testRatingList['personality']))
 		
-		pprint("Ratings Calculated in %.4f seconds" % (time.time() - start_time))
+		pprint("-> Ratings Calculated in %.4f seconds" % (time.time() - start_time))
 		
-		pprint("Test Scores")
-		pprint("Method\tPearson\tPersonality", sepCount = 0, symbolCount = 0)
+		pprint("Test Scores", symbolCount = 20, sepCount = 1)
+		pprint("Method\t\t\t\tPearson\t\t\tPersonality", sepCount = 0, symbolCount = 0)
 		for item in zip(testLabels, zip(pearsonTest, personalityTest)):
-			print("%s\t%.4f\t%.4f" % (item[0], item[1][0], item[1][1]))
+			print("%s\t\t\t%.4f\t\t\t%.4f" % (item[0], item[1][0], item[1][1]))
 		
-		print("\n\n\n")
+		pprint('', symbolCount = 28, sepCount = 0)
+		print("\n\n")

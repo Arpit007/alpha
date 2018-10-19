@@ -40,7 +40,7 @@ def run():
 	
 	ratingTable = dataset.getRatingTable(ratingList)
 	sparsity = len(ratingList) / np.prod(ratingTable.shape)
-	pprint("Sparsity: %f%%" % float(sparsity * 100))
+	pprint("-> Sparsity: %f%%" % float(sparsity * 100))
 	
 	# Calculating Pearson Scores
 	start_time = time.time()
@@ -59,7 +59,7 @@ def run():
 	pprint('Calculating Pearson Personality Scores')
 	pearsonPersonalityScores = scores.calcPearsonPersonality(pearsonScores, personalityScores)
 	
-	pprint("Scores Calculated in %.4f seconds" % (time.time() - start_time))
+	pprint("-> Scores Calculated in %.4f seconds" % (time.time() - start_time))
 	
 	while True:
 		# Get userId
