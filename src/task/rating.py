@@ -38,10 +38,10 @@ def predictRating(userId, itemId, ratingTable, scoreTable, avgRating, k = 5):
 	return rating
 
 
-def getOrCalculateUserItemRating(userId, userElements, ratingTable, scoreTable, avgRatings):
+def getOrCalculateUserItemRating(userId, userElements, ratingTable, scoreTable, avgRatings, k = 5):
 	ratings = userElements.index.map(lambda x: userElements.loc[x, 'rating']
 	if userElements.loc[x, 'rating'] > 0 else predictRating(userId, userElements.loc[x, 'itemId'], ratingTable,
-	                                                        scoreTable, avgRatings))
+	                                                        scoreTable, avgRatings, k = k))
 	
 	return np.array(ratings)
 

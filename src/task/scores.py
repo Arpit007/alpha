@@ -115,5 +115,5 @@ def calcAllPersonalityScore(ratingTable, persScores, avgRating):
 	return personalityScoresFrame
 
 
-def calcPearsonPersonality(pearsonScores, personalityScores, alpha = 0.4):
+def calcHybrid(pearsonScores, personalityScores, alpha = 0.4):
 	return alpha * pearsonScores + (1 - alpha) * personalityScores

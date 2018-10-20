@@ -4,18 +4,21 @@ from src.task import users
 from src.task import scores
 from src.task import rating
 from src.utils.printer import pprint
-import time
+from src.utils.timing import Timing
 
 """
 SHOULD_MINIMIZE_SET: To Minimize Set
 MINIMUM_USER_RATE_COUNT: Minimum Number of Items to be rated by a user to be in set
 MINIMUM_ITEM_RATED_COUNT:Minimum Number of Ratings for an Item to be in set
+HYBRID_ALPHA: Alpha value to calculate Hybrid Scores
 SUGGESTIONS_COUNT: Count of Suggestions to be given to user
 """
 
 SHOULD_MINIMIZE_SET = True
 MINIMUM_USER_RATE_COUNT = 4
 MINIMUM_ITEM_RATED_COUNT = 3
+NEIGHBOURS_COUNT = 5
+HYBRID_ALPHA = 0.4
 SUGGESTIONS_COUNT = 5
 
 
@@ -34,24 +37,24 @@ def run():
 	sparsity = len(ratingList) / np.prod(ratingTable.shape)
 	pprint("-> Sparsity: %f%%" % float(sparsity * 100))
 	
-	# Calculating Pearson Scores
-	start_time = time.time()
-	pprint('Calculating Pearson Scores')
-	
-	# Get Users Average Rating
-	avgRating = rating.getUsersAverageRating(ratingTable)
-	
-	pearsonScores = scores.calcAllPearson(ratingTable, avgRating)
-	
-	# Calculating Personality Scores
-	pprint('Calculating Personality Scores')
-	personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList, avgRating)
-	
-	# Calculating Pearson Personality Scores
-	pprint('Calculating Pearson Personality Scores')
-	pearsonPersonalityScores = scores.calcPearsonPersonality(pearsonScores, personalityScores)
-	
-	pprint("-> Scores Calculated in %.4f seconds" % (time.time() - start_time))
+	# Calculate Timings of High Computation Tasks
+	with Timing() as startTime:
+		# Get Users Average Rating
+		avgRating = rating.getUsersAverageRating(ratingTable)
+		
+		# Calculating Pearson Scores
+		pprint('Calculating Pearson Scores')
+		pearsonScores = scores.calcAllPearson(ratingTable, avgRating)
+		
+		# Calculating Personality Scores
+		pprint('Calculating Personality Scores')
+		personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList, avgRating)
+		
+		# Calculating Hybrid Scores
+		pprint('Calculating Hybrid Scores')
+		hybridScores = scores.calcHybrid(pearsonScores, personalityScores, alpha = HYBRID_ALPHA)
+		
+		pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 	
 	while True:
 		# Get userId
@@ -69,7 +72,8 @@ def run():
 			# Calculating Suggestion Ratings
 			userRatings = users.getUserItems(userId, cityId, ratingList, ratingTable)
 			userRatings['rating'] = rating.getOrCalculateUserItemRating(userId, userRatings, ratingTable,
-			                                                            pearsonPersonalityScores, avgRating)
+			                                                            hybridScores, avgRating,
+			                                                            k = NEIGHBOURS_COUNT)
 			userRatings = userRatings.sort_values('rating', ascending = False)[:SUGGESTIONS_COUNT]
 			
 			# Suggest Items
