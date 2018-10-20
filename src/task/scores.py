@@ -3,7 +3,7 @@ from src.task import correlation
 import pandas as pd
 
 
-def pearsonScore(user1, user2, userRatings, ratingTable, gamma = 5):
+def pearsonScore(user1, user2, userRatings, ratingTable, avgRating, gamma = 5):
 	if user1 == user2:
 		return 0.0
 	
@@ -21,8 +21,10 @@ def pearsonScore(user1, user2, userRatings, ratingTable, gamma = 5):
 		return 0.0
 	
 	# Calculate Score
-	user1Avg = np.average(corr1)
-	user2Avg = np.average(corr2)
+	#user1Avg = np.average(corr1)
+	#user2Avg = np.average(corr2)
+	user1Avg = avgRating.loc[user1, 'avgRating']
+	user2Avg = avgRating.loc[user2, 'avgRating']
 	top = 0
 	bottom1 = 0
 	bottom2 = 0
@@ -49,19 +51,19 @@ def pearsonScore(user1, user2, userRatings, ratingTable, gamma = 5):
 	return penalisedScore
 
 
-def pearsonScores(userId, ratingTable, gamma = 5):
+def pearsonScores(userId, ratingTable, avgRating, gamma = 5):
 	userRated = correlation.getUserRatedItems(ratingTable, userId)
 	
-	pScores = ratingTable.columns.map(lambda user: pearsonScore(userId, user, userRated, ratingTable, gamma))
+	pScores = ratingTable.columns.map(lambda user: pearsonScore(userId, user, userRated, ratingTable, avgRating, gamma))
 	
 	return pScores
 
 
-def calcAllPearson(ratingTable):
+def calcAllPearson(ratingTable, avgRating):
 	# Todo: Optimize
 	pearsonScoresFrame = pd.DataFrame(index = ratingTable.columns)
 	for i in ratingTable.columns:
-		pearsonScoresFrame[i] = pearsonScores(i, ratingTable)
+		pearsonScoresFrame[i] = pearsonScores(i, ratingTable, avgRating)
 	
 	return pearsonScoresFrame
 

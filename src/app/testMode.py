@@ -61,7 +61,7 @@ def run():
 		# Get Users Average Rating
 		avgRating = rating.getUsersAverageRating(ratingTable)
 		
-		pearsonScores = scores.calcAllPearson(ratingTable)
+		pearsonScores = scores.calcAllPearson(ratingTable, avgRating)
 		
 		# Calculating Personality Scores
 		pprint('Calculating Personality Scores')
