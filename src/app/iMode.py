@@ -34,7 +34,7 @@ def run():
 		                                                MINIMUM_USER_RATE_COUNT)
 	
 	ratingTable = dataset.getRatingTable(ratingList)
-	sparsity = len(ratingList) / np.prod(ratingTable.shape)
+	sparsity = 1 - len(ratingList) / np.prod(ratingTable.shape)
 	pprint("-> Sparsity: %f%%" % float(sparsity * 100))
 	
 	# Calculate Timings of High Computation Tasks

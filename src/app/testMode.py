@@ -50,7 +50,7 @@ def run():
 		                                                                          random_state = RANDOM_STATE)
 		
 		ratingTable = dataset.getRatingTable(trainRatingList)
-		sparsity = len(trainRatingList) / np.prod(ratingTable.shape)
+		sparsity = 1 - len(trainRatingList) / np.prod(ratingTable.shape)
 		pprint("-> Sparsity: %f%%" % float(sparsity * 100))
 		
 		# Calculate Timings of High Computation Tasks
