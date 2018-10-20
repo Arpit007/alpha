@@ -28,7 +28,7 @@ def getUsersFrame(ratingTable):
 
 def getICityId(ratingList):
 	cityCount = getCityCount(ratingList)
-	cityId = int(input("Enter City Id(1-%d)" % cityCount))
+	cityId = int(input("Enter City Id(1-%d): " % cityCount))
 	if (cityId < 1 or cityId > cityCount) and cityId != -1:
 		raise Exception("Invalid City Id")
 	return cityId

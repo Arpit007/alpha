@@ -1,4 +1,5 @@
 import multiprocessing as mp
+import argparse
 import sys
 
 """
@@ -7,34 +8,26 @@ TEST_MODE:  For Testing
 INTERACTIVE_MODE: For User Interaction
 """
 
-APP_MODES = {
-	'TEST_MODE': 1,
-	'INTERACTIVE_MODE': 2
-}
-
-DEFAULT_MODE = APP_MODES['TEST_MODE']
-
 if __name__ == "__main__":
 	mp.freeze_support()
 	
-	appMode=DEFAULT_MODE
-	#appMode = sys.argv[0] if len(sys.argv) > 0 else DEFAULT_MODE
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-i', '--interactive', help = 'Interactive Mode', action = "store_true")
+	parser.add_argument('-t', '--test', help = 'Test Mode', action = "store_true")
+	args = parser.parse_args()
+	
 	app = None
 	
-	if appMode == APP_MODES['TEST_MODE']:
-		from src.app import testMode
-		
-		app = testMode
-	elif appMode == APP_MODES['INTERACTIVE_MODE']:
+	if args.interactive:
 		from src.app import iMode
 		
 		app = iMode
+	else:
+		from src.app import testMode
+		
+		app = testMode
 	
-	if app is None:
-		print("Invalid App Mode")
-		sys.exit(-1)
-	
-	# Run the App Mode
+	# Run the App
 	app.run()
 	
 	sys.exit(0)

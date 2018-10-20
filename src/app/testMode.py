@@ -45,9 +45,9 @@ def run():
 			ratingList, persScoreList = dataset.minimizeSet(ratingList, persScoreList, MINIMUM_ITEM_RATED_COUNT,
 			                                                MINIMUM_USER_RATE_COUNT)
 		
-		testRatingList, trainRatingList = splitting.test_inPlaceTrain_Frame(ratingList, 1, relativeSplit = False,
-		                                                                    shuffle = SHOULD_SHUFFLE,
-		                                                                    random_state = RANDOM_STATE)
+		testRatingList, trainRatingList = splitting.test_inPlaceTrain_split_Frame(ratingList, 1, relativeSplit = False,
+		                                                                          shuffle = SHOULD_SHUFFLE,
+		                                                                          random_state = RANDOM_STATE)
 		
 		ratingTable = dataset.getRatingTable(trainRatingList)
 		sparsity = len(trainRatingList) / np.prod(ratingTable.shape)

@@ -13,7 +13,7 @@ def test_train_split(dataset, testSize = 0.2, relativeSplit = True, shuffle = Fa
 	:param shuffle: Should sets be shuffled
 	:param random_state: Random seed for shuffling
 	:param axis: 0 for Splitting row-wise, 1 for column-wise
-	:return: (t
+	:return: (testSet, trainSet)
 	"""
 	if dataset is None:
 		raise Exception("Invalid Dataset")
@@ -34,7 +34,7 @@ def test_train_split(dataset, testSize = 0.2, relativeSplit = True, shuffle = Fa
 	return result
 
 
-def test_train_Frames(ratingList, testSize = 0.2, relativeSplit = True, shuffle = False, random_state = None, axis = 0):
+def test_train_split_Frame(ratingList, testSize = 0.2, relativeSplit = True, shuffle = False, random_state = None, axis = 0):
 	test = []
 	train = []
 	
@@ -55,8 +55,8 @@ def test_train_Frames(ratingList, testSize = 0.2, relativeSplit = True, shuffle 
 	return (testSet, trainSet)
 
 
-def test_inPlaceTrain_Frame(ratingList, testSize = 0.2, relativeSplit = True, shuffle = False, random_state = None,
-                            axis = 0):
+def test_inPlaceTrain_split_Frame(ratingList, testSize = 0.2, relativeSplit = True, shuffle = False, random_state = None,
+                                  axis = 0):
 	test = []
 	train = []
 	
