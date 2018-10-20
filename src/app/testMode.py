@@ -9,6 +9,7 @@ import time
 
 """
 SHOULD_MINIMIZE_SET: To Minimize Set
+SHOULD_SHUFFLE: To Shuffle the Tes, Train Sets
 MINIMUM_USER_RATE_COUNT: Minimum Number of Items to be rated by a user to be in set
 MINIMUM_ITEM_RATED_COUNT:Minimum Number of Ratings for an Item to be in set
 SUGGESTIONS_COUNT: Count of Suggestions to be given to user
