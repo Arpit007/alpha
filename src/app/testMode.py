@@ -35,7 +35,6 @@ def run():
 		# Load the Datasets
 		ratingList = dataset.getRatingsList(key)
 		persScoreList = dataset.getPersonalityDataset()
-		itemsList = dataset.getItemsDataSet()
 		
 		# Minimise dataset for Optimization
 		if SHOULD_MINIMIZE_SET is True:
@@ -94,7 +93,7 @@ def run():
 		pprint("Test Scores", symbolCount = 20, sepCount = 1)
 		pprint("Method\t\t\t\tPearson\t\t\tPersonality", sepCount = 0, symbolCount = 0)
 		for item in zip(testLabels, zip(pearsonTest, personalityTest)):
-			print("%s\t\t\t%.4f\t\t\t%.4f" % (item[0], item[1][0], item[1][1]))
+			print(item[0], "%.4f" % item[1][0], "%.4f" % item[1][1], sep = '\t\t\t')
 		
 		pprint('', symbolCount = 28, sepCount = 0)
 		print("\n\n")
