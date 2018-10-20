@@ -55,3 +55,16 @@ def getIRatingList():
 	ratingList = getRatingsList(key)
 	
 	return ratingList, key
+
+def minimizeSet(ratingList, persScoreList, minItemRatedCount, minUserRateCount):
+	items = ratingList.groupby('itemId').agg({ 'itemId': 'count' }).rename(columns = { 'itemId': 'count' })
+	items = items[items['count'] >= minItemRatedCount]
+	ratingList = ratingList[ratingList['itemId'].apply(lambda x: x in items.index)]
+	
+	usersList = ratingList.groupby('userId').agg({ 'userId': 'count' }).rename(columns = { 'userId': 'count' })
+	usersList = usersList[usersList['count'] >= minUserRateCount]
+	ratingList = ratingList[ratingList['userId'].apply(lambda x: x in usersList.index)]
+	
+	persScoreList = persScoreList.loc[usersList.index]
+	
+	return (ratingList, persScoreList)

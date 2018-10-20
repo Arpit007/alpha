@@ -27,16 +27,8 @@ def run():
 	
 	# Minimise dataset for Optimization
 	if SHOULD_MINIMIZE_SET is True:
-		items = ratingList.groupby('itemId').agg({ 'itemId': 'count' }).rename(columns = { 'itemId': 'count' })
-		items = items[items['count'] >= MINIMUM_ITEM_RATED_COUNT]
-		ratingList = ratingList[ratingList['itemId'].apply(lambda x: x in items.index)]
-		
-		usersList = ratingList.groupby('userId').agg({ 'userId': 'count' }).rename(columns = { 'userId': 'count' })
-		usersList = usersList[usersList['count'] >= MINIMUM_USER_RATE_COUNT]
-		ratingList = ratingList[ratingList['userId'].apply(lambda x: x in usersList.index)]
-		
-		persScoreList = persScoreList.loc[usersList.index]
-		del usersList, items
+		ratingList, persScoreList = dataset.minimizeSet(ratingList, persScoreList, MINIMUM_ITEM_RATED_COUNT,
+		                                                MINIMUM_USER_RATE_COUNT)
 	
 	ratingTable = dataset.getRatingTable(ratingList)
 	sparsity = len(ratingList) / np.prod(ratingTable.shape)
