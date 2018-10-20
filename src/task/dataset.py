@@ -30,6 +30,7 @@ def getItemsDataSet():
 
 def getPersonalityDataset():
 	path = __DATASET_PATH % 'pers_score'
+	# Personality Values in Scale 1 to 7
 	dataset = pd.read_csv(path, sep = '|', index_col = 0)
 	return dataset
 
