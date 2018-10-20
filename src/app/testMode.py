@@ -13,6 +13,7 @@ SHOULD_SHUFFLE: To Shuffle the Tes, Train Sets
 MINIMUM_USER_RATE_COUNT: Minimum Number of Items to be rated by a user to be in set
 MINIMUM_ITEM_RATED_COUNT:Minimum Number of Ratings for an Item to be in set
 SUGGESTIONS_COUNT: Count of Suggestions to be given to user
+RANDOM_STATE: Set Specific Random State, in case of Shuffling
 MULTI_TYPE_TEST: If False, Only test Hotels else all the 3 types
 """
 
@@ -21,6 +22,7 @@ SHOULD_SHUFFLE = True
 MINIMUM_USER_RATE_COUNT = 4
 MINIMUM_ITEM_RATED_COUNT = 3
 SUGGESTIONS_COUNT = 5
+RANDOM_STATE = None
 MULTI_TYPE_TEST = True
 
 
@@ -42,7 +44,8 @@ def run():
 			                                                MINIMUM_USER_RATE_COUNT)
 		
 		testRatingList, trainRatingList = splitting.test_inPlaceTrain_Frame(ratingList, 1, relativeSplit = False,
-		                                                                    shuffle = SHOULD_SHUFFLE)
+		                                                                    shuffle = SHOULD_SHUFFLE,
+		                                                                    random_state = RANDOM_STATE)
 		
 		ratingTable = dataset.getRatingTable(trainRatingList)
 		sparsity = len(trainRatingList) / np.prod(ratingTable.shape)
