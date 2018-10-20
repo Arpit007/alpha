@@ -16,6 +16,7 @@ MULTI_TYPE_TEST: If False, Only test Hotels else all the 3 types
 """
 
 SHOULD_MINIMIZE_SET = True
+SHOULD_SHUFFLE = True
 MINIMUM_USER_RATE_COUNT = 4
 MINIMUM_ITEM_RATED_COUNT = 3
 SUGGESTIONS_COUNT = 5
@@ -40,7 +41,8 @@ def run():
 			ratingList, persScoreList = dataset.minimizeSet(ratingList, persScoreList, MINIMUM_ITEM_RATED_COUNT,
 			                                                MINIMUM_USER_RATE_COUNT)
 		
-		testRatingList, trainRatingList = splitting.test_inPlaceTrain_Frame(ratingList, 1, False, True)
+		testRatingList, trainRatingList = splitting.test_inPlaceTrain_Frame(ratingList, 1, relativeSplit = False,
+		                                                                    shuffle = SHOULD_SHUFFLE)
 		
 		ratingTable = dataset.getRatingTable(trainRatingList)
 		sparsity = len(trainRatingList) / np.prod(ratingTable.shape)
