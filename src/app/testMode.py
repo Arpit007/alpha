@@ -24,11 +24,11 @@ MINIMUM_ITEM_RATED_COUNT = 3
 NEIGHBOURS_COUNT = 5
 RANDOM_STATE = 173967420
 HYBRID_ALPHA = 0.4
-MULTI_TYPE_TEST = True
+MULTI_TYPE_TEST = False
 
 
 def run():
-	keys = dataset.DATASETS.keys()
+	keys = list(dataset.DATASETS.keys())
 	if MULTI_TYPE_TEST is False:
 		keys = keys[:1]
 	
@@ -61,6 +61,7 @@ def run():
 			
 			pearsonScores = engine.calculateScores("pearson", ratingTable, avgRating, itemAvgRating)
 			pipScores = engine.calculateScores("pip", ratingTable, avgRating, itemAvgRating)
+			mpipScores = engine.calculateScores("mpip", ratingTable, avgRating, itemAvgRating)
 			personalityScores = engine.calculateScores("personality", ratingTable, avgRating, itemAvgRating, persScoreList = persScoreList)
 			hybridScores = engine.calculateScores("hybrid", ratingTable, avgRating, itemAvgRating, pearsonScores = pearsonScores,
 			                                      personalityScores = personalityScores, alpha = HYBRID_ALPHA)
@@ -75,6 +76,7 @@ def run():
 			
 			pearsonTest = engine.predictAndEvaluate("pearson", testRatingList, ratingTable, pearsonScores, avgRating, NEIGHBOURS_COUNT)
 			pipTest = engine.predictAndEvaluate("pip", testRatingList, ratingTable, pipScores, avgRating, NEIGHBOURS_COUNT)
+			mpipTest = engine.predictAndEvaluate("mpip", testRatingList, ratingTable, mpipScores, avgRating, NEIGHBOURS_COUNT)
 			personalityTest = engine.predictAndEvaluate("personality", testRatingList, ratingTable, personalityScores, avgRating, NEIGHBOURS_COUNT)
 			hybridTest = engine.predictAndEvaluate("hybrid", testRatingList, ratingTable, hybridScores, avgRating, NEIGHBOURS_COUNT)
 			
@@ -86,6 +88,7 @@ def run():
 		print("Method\t",
 		      "Pearson",
 		      "PIP",
+		      "MPIP",
 		      "Prsnlty",
 		      "Hybrid",
 		      sep = "\t\t\t")
@@ -94,6 +97,7 @@ def run():
 			print(testLabels[i],
 			      "%.4f" % pearsonTest[i],
 			      "%.4f" % pipTest[i],
+			      "%.4f" % mpipTest[i],
 			      "%.4f" % personalityTest[i],
 			      "%.4f" % hybridTest[i],
 			      sep = '\t\t\t')

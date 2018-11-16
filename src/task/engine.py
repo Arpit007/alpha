@@ -13,7 +13,9 @@ def calculateScores(task, ratingTable, avgRating, itemAvgRating, persScoreList =
 	elif task == "hybrid":
 		return algo.calcHybridScores(pearsonScores, personalityScores, alpha = alpha)
 	elif task == "pip":
-		return algo.calcAllPipScores(ratingTable, itemAvgRating)
+		return algo.calcPipScores(ratingTable, itemAvgRating)
+	elif task == "mpip":
+		return algo.calcMPipScores(ratingTable, itemAvgRating)
 	else:
 		raise Exception("Invalid Score Calculator")
 
