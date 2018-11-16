@@ -1,4 +1,4 @@
-from src.task import scores
+from src.task import algo
 from src.task import rating
 from src.utils import metrics
 from src.utils.printer import pprint
@@ -7,13 +7,13 @@ def calculateScores(task, ratingTable, avgRating, itemAvgRating, persScoreList =
                     pearsonScores = None, personalityScores = None, alpha = None):
 	pprint('Calculating %s Scores' % task)
 	if task == "pearson":
-		return scores.calcAllPearson(ratingTable, avgRating)
-	elif task == "pip":
-		return scores.calcAllPipScores(ratingTable, itemAvgRating)
+		return algo.calcPearsonScores(ratingTable, avgRating)
 	elif task == "personality":
-		return scores.calcAllPersonalityScore(ratingTable, persScoreList)
+		return algo.calculatePersonalityScores(ratingTable, persScoreList)
 	elif task == "hybrid":
-		return scores.calcHybrid(pearsonScores, personalityScores, alpha = alpha)
+		return algo.calcHybridScores(pearsonScores, personalityScores, alpha = alpha)
+	elif task == "pip":
+		return algo.calcAllPipScores(ratingTable, itemAvgRating)
 	else:
 		raise Exception("Invalid Score Calculator")
 

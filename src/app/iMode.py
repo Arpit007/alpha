@@ -1,7 +1,7 @@
 import numpy as np
 from src.task import dataset
 from src.task import users
-from src.task import scores
+from src.task import algo
 from src.task import rating
 from src.utils.printer import pprint
 from src.utils.timing import Timing
@@ -44,15 +44,15 @@ def run():
 		
 		# Calculating Pearson Scores
 		pprint('Calculating Pearson Scores')
-		pearsonScores = scores.calcAllPearson(ratingTable, avgRating)
+		pearsonScores = algo.calcPearsonScores(ratingTable, avgRating)
 		
 		# Calculating Personality Scores
 		pprint('Calculating Personality Scores')
-		personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList)
+		personalityScores = algo.calculatePersonalityScores(ratingTable, persScoreList)
 		
 		# Calculating Hybrid Scores
 		pprint('Calculating Hybrid Scores')
-		hybridScores = scores.calcHybrid(pearsonScores, personalityScores, alpha = HYBRID_ALPHA)
+		hybridScores = algo.calcHybridScores(pearsonScores, personalityScores, alpha = HYBRID_ALPHA)
 		
 		pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 	
