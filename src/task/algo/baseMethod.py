@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from src.task.rating import predictTestRatings
 from src.utils import metrics
-from src.utils.printer import pprint
+from src.utils.misc import pprint
 
 
 class BaseMethod(ABC):

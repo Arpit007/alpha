@@ -3,7 +3,7 @@ from src.task import dataset
 from src.task import rating
 from src.task import algo
 from src.utils import splitting
-from src.utils.printer import pprint
+from src.utils.misc import pprint
 from src.utils.timing import Timing
 
 """
@@ -43,9 +43,8 @@ def run():
 		if SHOULD_MINIMIZE_SET is True:
 			ratingList, persScoreList = dataset.minimizeSet(ratingList, persScoreList, MINIMUM_ITEM_RATED_COUNT, MINIMUM_USER_RATE_COUNT)
 		
-		testRatingList, trainRatingList = splitting.test_inPlaceTrain_split_Frame(ratingList, 1, relativeSplit = False,
-		                                                                          shuffle = SHOULD_SHUFFLE,
-		                                                                          random_state = RANDOM_STATE)
+		testRatingList, trainRatingList = splitting.test_inPlaceTrain_split_Frame(
+			ratingList, 1, relativeSplit = False, shuffle = SHOULD_SHUFFLE, random_state = RANDOM_STATE)
 		
 		ratingTable = dataset.getRatingTable(trainRatingList)
 		sparsity = 1 - len(trainRatingList) / np.prod(ratingTable.shape)
@@ -53,7 +52,8 @@ def run():
 		
 		# Calculate Timings of High Computation Tasks
 		with Timing() as startTime:
-			# Get Users Average Rating
+			
+			# Get Average Ratings
 			avgRating = rating.getUsersAverageRating(ratingTable)
 			itemsAvgRating = rating.getItemsAverageRating(ratingTable)
 			
@@ -64,8 +64,12 @@ def run():
 				algo.MPip.TASK: algo.MPip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
 				algo.Personality.TASK: algo.Personality(ratingTable, avgRating, persScores = persScoreList)
 			}
-			methods[algo.Hybrid.TASK] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
-			                                        algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			methods["pearPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
+			                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			methods["pipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
+			                                 algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			methods["mpipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.MPip.TASK],
+			                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
 			
 			pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
@@ -76,15 +80,16 @@ def run():
 			for method in methods.values():
 				method.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT, itemsAvgRating = itemsAvgRating)
 			
-			testLabels = ['Specificity', 'Precision', 'Recall  ', 'Accuracy', 'MAE     ', 'RMSE     ']
-			
 			pprint("-> Ratings Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
-		pprint("Test Scores", symbolCount = 21, sepCount = 1)
-		print("Method\t", *[method.name for method in methods], sep = "\t\t\t")
+		pprint("Test Scores", symbolCount = 47, sepCount = 0)
 		
-		for i in range(len(testLabels)):
-			print(testLabels[i], *["%.4f" % method.metrics[i] for method in methods.values()], sep = '\t\t\t')
+		testLabels = ['Method', 'Specificity', 'Precision', 'Recall', 'Accuracy', 'MAE', 'RMSE']
+		row_format = "{:>15}" * len(testLabels)
+		print(row_format.format(*testLabels))
 		
-		pprint('', symbolCount = 29, sepCount = 0)
+		for method in methods.values():
+			print(row_format.format(method.name, *["%.4f" % val for val in method.metrics]))
+		
+		pprint("*" * (15 * len(testLabels)))
 		print("\n\n")

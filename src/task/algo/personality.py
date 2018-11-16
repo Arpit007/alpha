@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from src.task.algo.baseMethod import BaseMethod
-from src.utils.printer import pprint
+from src.utils.misc import pprint
 
 
 class Personality(BaseMethod):

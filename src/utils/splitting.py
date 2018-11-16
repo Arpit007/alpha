@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from src.utils.printer import pprint
+from src.utils.misc import pprint
 from sklearn.utils import shuffle as shuffleData
 
 MAX_SEED = 2 ** 30

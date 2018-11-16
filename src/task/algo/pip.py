@@ -1,9 +1,9 @@
-from src.task import correlation
 import pandas as pd
 
 from src.task.algo.baseMethod import BaseMethod
+from src.task.users import getUserRatedItems
 from src.utils.misc import normalizeScore
-from src.utils.printer import pprint
+from src.utils.misc import pprint
 
 
 class Pip(BaseMethod):
@@ -62,7 +62,7 @@ class Pip(BaseMethod):
 		return score
 	
 	def __pipScore2Users(self, userId, ratingTable, itemsAvgRating):
-		userRated = correlation.getUserRatedItems(ratingTable, userId)
+		userRated = getUserRatedItems(ratingTable, userId)
 		
 		pScores = ratingTable.columns.map(lambda user: self.__pipScore(userId, user, userRated, ratingTable, itemsAvgRating))
 		

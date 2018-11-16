@@ -1,5 +1,5 @@
 from src.task.algo.baseMethod import BaseMethod
-from src.utils.printer import pprint
+from src.utils.misc import pprint
 
 
 class Hybrid(BaseMethod):
@@ -12,7 +12,7 @@ class Hybrid(BaseMethod):
 			self.calculate(ratingTable, avgRating, **params)
 	
 	def calculate(self, ratingTable, avgRating, **params):
-		self.name = "%s + %s" % (params["algo1"].name, params["algo2"].name)
+		self.name = "%s+%s" % (params["algo1"].name, params["algo2"].name)
 		
 		pprint('Calculating %s Scores' % self.name)
 		

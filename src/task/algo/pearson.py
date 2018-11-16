@@ -1,9 +1,9 @@
 import numpy as np
-from src.task import correlation
 import pandas as pd
 
 from src.task.algo.baseMethod import BaseMethod
-from src.utils.printer import pprint
+from src.task.users import getUserRatedItems
+from src.utils.misc import pprint
 
 
 class Pearson(BaseMethod):
@@ -63,7 +63,7 @@ class Pearson(BaseMethod):
 		return penalisedScore
 	
 	def __pearsonScore2Users(self, userId, ratingTable, avgRating, gamma = 5):
-		userRated = correlation.getUserRatedItems(ratingTable, userId)
+		userRated = getUserRatedItems(ratingTable, userId)
 		
 		pScores = ratingTable.columns.map(lambda user: self.__pearsonScore(userId, user, userRated, ratingTable, avgRating, gamma))
 		

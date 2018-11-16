@@ -1,10 +1,9 @@
 import numpy as np
 from src.task import dataset
 from src.task import users
-from src.task import algo
 from src.task import rating
 from src.task.algo import Pearson, Personality, Hybrid
-from src.utils.printer import pprint
+from src.utils.misc import pprint
 from src.utils.timing import Timing
 
 """
