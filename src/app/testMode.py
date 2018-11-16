@@ -58,48 +58,33 @@ def run():
 			itemsAvgRating = rating.getItemsAverageRating(ratingTable)
 			
 			# Calculating Scores
-			pearson = algo.Pearson(ratingTable, avgRating)
-			pip = algo.Pip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating)
-			mPip = algo.MPip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating)
-			personality = algo.Personality(ratingTable, avgRating, persScores = persScoreList)
-			hybrid = algo.Hybrid(ratingTable, avgRating, algo1 = pearson, algo2 = personality, alpha = HYBRID_ALPHA)
+			methods = {
+				algo.Pearson.TASK: algo.Pearson(ratingTable, avgRating),
+				algo.Pip.TASK: algo.Pip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
+				algo.MPip.TASK: algo.MPip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
+				algo.Personality.TASK: algo.Personality(ratingTable, avgRating, persScores = persScoreList)
+			}
+			methods[algo.Hybrid.TASK] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
+			                                        algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
 			
 			pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
 		# Calculate Timings of High Computation Tasks
 		with Timing() as startTime:
 			
-			# Calculating Ratings
-			pprint('Calculating Ratings & Test Scores')
-			
-			pearson.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT)
-			pip.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT, itemsAvgRating = itemsAvgRating)
-			mPip.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT, itemsAvgRating = itemsAvgRating)
-			personality.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT)
-			hybrid.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT)
+			# Calculating Ratings and Metrics
+			for method in methods.values():
+				method.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT, itemsAvgRating = itemsAvgRating)
 			
 			testLabels = ['Specificity', 'Precision', 'Recall  ', 'Accuracy', 'MAE     ', 'RMSE     ']
 			
 			pprint("-> Ratings Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
 		pprint("Test Scores", symbolCount = 21, sepCount = 1)
-		print("Method\t",
-		      "Pearson",
-		      "PIP",
-		      "MPIP",
-		      "MNPIP",
-		      "Prsnlty",
-		      "Hybrid",
-		      sep = "\t\t\t")
+		print("Method\t", *[method.name for method in methods], sep = "\t\t\t")
 		
 		for i in range(len(testLabels)):
-			print(testLabels[i],
-			      "%.4f" % pearson.metrics[i],
-			      "%.4f" % pip.metrics[i],
-			      "%.4f" % mPip.metrics[i],
-			      "%.4f" % personality.metrics[i],
-			      "%.4f" % hybrid.metrics[i],
-			      sep = '\t\t\t')
+			print(testLabels[i], *["%.4f" % method.metrics[i] for method in methods.values()], sep = '\t\t\t')
 		
 		pprint('', symbolCount = 29, sepCount = 0)
 		print("\n\n")

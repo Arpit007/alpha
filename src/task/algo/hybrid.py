@@ -3,8 +3,10 @@ from src.utils.printer import pprint
 
 
 class Hybrid(BaseMethod):
+	TASK = "hybrid"
+	
 	def __init__(self, ratingTable = None, avgRating = None, **params):
-		super().__init__("hybrid", "Hybrid")
+		super().__init__(Hybrid.TASK, "Hybrid")
 		
 		if ratingTable is not None:
 			self.calculate(ratingTable, avgRating, **params)
@@ -14,4 +16,4 @@ class Hybrid(BaseMethod):
 		
 		pprint('Calculating %s Scores' % self.name)
 		
-		self.score =  params["alpha"] * params["algo1"].score + (1 - params["alpha"]) * params["algo2"].score
+		self.score = params["alpha"] * params["algo1"].score + (1 - params["alpha"]) * params["algo2"].score

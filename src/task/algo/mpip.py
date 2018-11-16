@@ -7,9 +7,10 @@ from src.utils.printer import pprint
 
 
 class MPip(BaseMethod):
+	TASK = "mpip"
 	
 	def __init__(self, ratingTable = None, avgRating = None, **params):
-		super().__init__("mpip", "M-PIP")
+		super().__init__(MPip.TASK, "M-PIP")
 		
 		if ratingTable is not None:
 			self.calculate(ratingTable, avgRating, **params)
@@ -73,5 +74,5 @@ class MPip(BaseMethod):
 		for i in ratingTable.columns:
 			pipScoresFrame[i] = self.__mPipScore2Users(i, ratingTable, params["itemsAvgRating"])
 			pipScoresFrame[i] = normalizeScore(pipScoresFrame[i])
-			
+		
 		self.score = pipScoresFrame

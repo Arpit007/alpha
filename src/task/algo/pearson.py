@@ -7,9 +7,10 @@ from src.utils.printer import pprint
 
 
 class Pearson(BaseMethod):
+	TASK = "pearson"
 	
 	def __init__(self, ratingTable = None, avgRating = None, **params):
-		super().__init__("pearson", "Pearson")
+		super().__init__(Pearson.TASK, "Pearson")
 		
 		if ratingTable is not None:
 			self.calculate(ratingTable, avgRating, **params)

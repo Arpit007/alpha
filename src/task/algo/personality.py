@@ -6,9 +6,10 @@ from src.utils.printer import pprint
 
 
 class Personality(BaseMethod):
+	TASK = "personality"
 	
 	def __init__(self, ratingTable = None, avgRating = None, **params):
-		super().__init__("personality", "Prsnlty")
+		super().__init__(Personality.TASK, "Prsnlty")
 		
 		if ratingTable is not None:
 			self.calculate(ratingTable, avgRating, **params)

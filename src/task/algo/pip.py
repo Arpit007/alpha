@@ -7,8 +7,10 @@ from src.utils.printer import pprint
 
 
 class Pip(BaseMethod):
+	TASK = "pip"
+	
 	def __init__(self, ratingTable = None, avgRating = None, **params):
-		super().__init__("pip", "PIP")
+		super().__init__(Pip.TASK, "PIP")
 		
 		if ratingTable is not None:
 			self.calculate(ratingTable, avgRating, **params)
