@@ -1,7 +1,7 @@
 import numpy as np
 from src.task import dataset
 from src.task import rating
-from src.task import engine
+from src.task import algo
 from src.utils import splitting
 from src.utils.printer import pprint
 from src.utils.timing import Timing
@@ -55,16 +55,14 @@ def run():
 		with Timing() as startTime:
 			# Get Users Average Rating
 			avgRating = rating.getUsersAverageRating(ratingTable)
-			itemAvgRating = rating.getItemsAverageRating(ratingTable)
+			itemsAvgRating = rating.getItemsAverageRating(ratingTable)
 			
 			# Calculating Scores
-			
-			pearsonScores = engine.calculateScores("pearson", ratingTable, avgRating, itemAvgRating)
-			pipScores = engine.calculateScores("pip", ratingTable, avgRating, itemAvgRating)
-			mpipScores = engine.calculateScores("mpip", ratingTable, avgRating, itemAvgRating)
-			personalityScores = engine.calculateScores("personality", ratingTable, avgRating, itemAvgRating, persScoreList = persScoreList)
-			hybridScores = engine.calculateScores("hybrid", ratingTable, avgRating, itemAvgRating, pearsonScores = pearsonScores,
-			                                      personalityScores = personalityScores, alpha = HYBRID_ALPHA)
+			pearson = algo.Pearson(ratingTable, avgRating)
+			pip = algo.Pip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating)
+			mPip = algo.MPip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating)
+			personality = algo.Personality(ratingTable, avgRating, persScores = persScoreList)
+			hybrid = algo.Hybrid(ratingTable, avgRating, algo1 = pearson, algo2 = personality, alpha = HYBRID_ALPHA)
 			
 			pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
@@ -74,11 +72,11 @@ def run():
 			# Calculating Ratings
 			pprint('Calculating Ratings & Test Scores')
 			
-			pearsonTest = engine.predictAndEvaluate("pearson", testRatingList, ratingTable, pearsonScores, avgRating, NEIGHBOURS_COUNT)
-			pipTest = engine.predictAndEvaluate("pip", testRatingList, ratingTable, pipScores, avgRating, NEIGHBOURS_COUNT)
-			mpipTest = engine.predictAndEvaluate("mpip", testRatingList, ratingTable, mpipScores, avgRating, NEIGHBOURS_COUNT)
-			personalityTest = engine.predictAndEvaluate("personality", testRatingList, ratingTable, personalityScores, avgRating, NEIGHBOURS_COUNT)
-			hybridTest = engine.predictAndEvaluate("hybrid", testRatingList, ratingTable, hybridScores, avgRating, NEIGHBOURS_COUNT)
+			pearson.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT)
+			pip.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT, itemsAvgRating = itemsAvgRating)
+			mPip.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT, itemsAvgRating = itemsAvgRating)
+			personality.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT)
+			hybrid.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT)
 			
 			testLabels = ['Specificity', 'Precision', 'Recall  ', 'Accuracy', 'MAE     ', 'RMSE     ']
 			
@@ -89,17 +87,18 @@ def run():
 		      "Pearson",
 		      "PIP",
 		      "MPIP",
+		      "MNPIP",
 		      "Prsnlty",
 		      "Hybrid",
 		      sep = "\t\t\t")
 		
 		for i in range(len(testLabels)):
 			print(testLabels[i],
-			      "%.4f" % pearsonTest[i],
-			      "%.4f" % pipTest[i],
-			      "%.4f" % mpipTest[i],
-			      "%.4f" % personalityTest[i],
-			      "%.4f" % hybridTest[i],
+			      "%.4f" % pearson.metrics[i],
+			      "%.4f" % pip.metrics[i],
+			      "%.4f" % mPip.metrics[i],
+			      "%.4f" % personality.metrics[i],
+			      "%.4f" % hybrid.metrics[i],
 			      sep = '\t\t\t')
 		
 		pprint('', symbolCount = 29, sepCount = 0)

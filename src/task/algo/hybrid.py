@@ -1,6 +1,17 @@
-import numpy as np
-from src.task import correlation
-import pandas as pd
+from src.task.algo.baseMethod import BaseMethod
+from src.utils.printer import pprint
 
-def calcHybridScores(pearsonScores, personalityScores, alpha = 0.4):
-	return alpha * pearsonScores + (1 - alpha) * personalityScores
+
+class Hybrid(BaseMethod):
+	def __init__(self, ratingTable = None, avgRating = None, **params):
+		super().__init__("hybrid", "Hybrid")
+		
+		if ratingTable is not None:
+			self.calculate(ratingTable, avgRating, **params)
+	
+	def calculate(self, ratingTable, avgRating, **params):
+		self.name = "%s + %s" % (params["algo1"].name, params["algo2"].name)
+		
+		pprint('Calculating %s Scores' % self.name)
+		
+		self.score =  params["alpha"] * params["algo1"].score + (1 - params["alpha"]) * params["algo2"].score

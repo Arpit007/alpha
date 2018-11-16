@@ -3,6 +3,7 @@ from src.task import dataset
 from src.task import users
 from src.task import algo
 from src.task import rating
+from src.task.algo import Pearson, Personality, Hybrid
 from src.utils.printer import pprint
 from src.utils.timing import Timing
 
@@ -37,6 +38,10 @@ def run():
 	sparsity = 1 - len(ratingList) / np.prod(ratingTable.shape)
 	pprint("-> Sparsity: %f%%" % float(sparsity * 100))
 	
+	pearson = Pearson()
+	personality = Personality()
+	hybrid = Hybrid()
+	
 	# Calculate Timings of High Computation Tasks
 	with Timing() as startTime:
 		# Get Users Average Rating
@@ -44,15 +49,15 @@ def run():
 		
 		# Calculating Pearson Scores
 		pprint('Calculating Pearson Scores')
-		pearsonScores = algo.calcPearsonScores(ratingTable, avgRating)
+		pearsonScores = pearson.calculate(ratingTable, avgRating)
 		
 		# Calculating Personality Scores
 		pprint('Calculating Personality Scores')
-		personalityScores = algo.calculatePersonalityScores(ratingTable, persScoreList)
+		personality.calculate(ratingTable, avgRating, persScores = persScoreList)
 		
 		# Calculating Hybrid Scores
 		pprint('Calculating Hybrid Scores')
-		hybridScores = algo.calcHybridScores(pearsonScores, personalityScores, alpha = HYBRID_ALPHA)
+		hybrid.calculate(pearsonScores,avgRating, algo1 = pearson, algo2 = personality, alpha = HYBRID_ALPHA)
 		
 		pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 	
@@ -72,7 +77,7 @@ def run():
 			# Calculating Suggestion Ratings
 			userRatings = users.getUserItems(userId, cityId, ratingList, ratingTable)
 			userRatings['rating'] = rating.getOrCalculateUserItemRating(userId, userRatings, ratingTable,
-			                                                            hybridScores, avgRating,
+			                                                            hybrid.score, avgRating,
 			                                                            k = NEIGHBOURS_COUNT)
 			userRatings = userRatings.sort_values('rating', ascending = False)[:SUGGESTIONS_COUNT]
 			
