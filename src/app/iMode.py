@@ -48,7 +48,7 @@ def run():
 		
 		# Calculating Personality Scores
 		pprint('Calculating Personality Scores')
-		personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList, avgRating)
+		personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList)
 		
 		# Calculating Hybrid Scores
 		pprint('Calculating Hybrid Scores')

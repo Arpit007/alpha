@@ -16,6 +16,11 @@ def getUsersAverageRating(ratingTable):
 	return avgRatings
 
 
+def getItemsAverageRating(ratingTable):
+	avgRatings = pd.DataFrame(ratingTable.apply(lambda x: np.average(x[x != 0]), axis = 1), columns = ['avgRating'])
+	return avgRatings
+
+
 def predictRating(userId, itemId, ratingTable, scoreTable, avgRating, k = 5):
 	tRatingTable = ratingTable.T
 	usersItemRating = tRatingTable[tRatingTable[itemId] > 0][[itemId]]

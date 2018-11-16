@@ -1,9 +1,8 @@
 import numpy as np
 from src.task import dataset
-from src.task import scores
 from src.task import rating
+from src.task import engine
 from src.utils import splitting
-from src.utils import metrics
 from src.utils.printer import pprint
 from src.utils.timing import Timing
 
@@ -23,7 +22,7 @@ SHOULD_SHUFFLE = True
 MINIMUM_USER_RATE_COUNT = 4
 MINIMUM_ITEM_RATED_COUNT = 3
 NEIGHBOURS_COUNT = 5
-RANDOM_STATE = None
+RANDOM_STATE = 173967420
 HYBRID_ALPHA = 0.4
 MULTI_TYPE_TEST = True
 
@@ -42,8 +41,7 @@ def run():
 		
 		# Minimise dataset for Optimization
 		if SHOULD_MINIMIZE_SET is True:
-			ratingList, persScoreList = dataset.minimizeSet(ratingList, persScoreList, MINIMUM_ITEM_RATED_COUNT,
-			                                                MINIMUM_USER_RATE_COUNT)
+			ratingList, persScoreList = dataset.minimizeSet(ratingList, persScoreList, MINIMUM_ITEM_RATED_COUNT, MINIMUM_USER_RATE_COUNT)
 		
 		testRatingList, trainRatingList = splitting.test_inPlaceTrain_split_Frame(ratingList, 1, relativeSplit = False,
 		                                                                          shuffle = SHOULD_SHUFFLE,
@@ -57,57 +55,47 @@ def run():
 		with Timing() as startTime:
 			# Get Users Average Rating
 			avgRating = rating.getUsersAverageRating(ratingTable)
+			itemAvgRating = rating.getItemsAverageRating(ratingTable)
 			
-			# Calculating Pearson Scores
-			pprint('Calculating Pearson Scores')
-			pearsonScores = scores.calcAllPearson(ratingTable, avgRating)
+			# Calculating Scores
 			
-			# Calculating Personality Scores
-			pprint('Calculating Personality Scores')
-			personalityScores = scores.calcAllPersonalityScore(ratingTable, persScoreList, avgRating)
-			
-			# Calculating Hybrid Scores
-			pprint('Calculating Hybrid Scores')
-			hybridScores = scores.calcHybrid(pearsonScores, personalityScores, alpha = HYBRID_ALPHA)
+			pearsonScores = engine.calculateScores("pearson", ratingTable, avgRating, itemAvgRating)
+			pipScores = engine.calculateScores("pip", ratingTable, avgRating, itemAvgRating)
+			personalityScores = engine.calculateScores("personality", ratingTable, avgRating, itemAvgRating, persScoreList = persScoreList)
+			hybridScores = engine.calculateScores("hybrid", ratingTable, avgRating, itemAvgRating, pearsonScores = pearsonScores,
+			                                      personalityScores = personalityScores, alpha = HYBRID_ALPHA)
 			
 			pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
 		# Calculate Timings of High Computation Tasks
 		with Timing() as startTime:
+			
 			# Calculating Ratings
 			pprint('Calculating Ratings & Test Scores')
 			
-			testRatingList['pearson'] = rating.predictTestRatings(testRatingList, ratingTable, pearsonScores,
-			                                                      avgRating, k = NEIGHBOURS_COUNT)
-			testRatingList['personality'] = rating.predictTestRatings(testRatingList, ratingTable, personalityScores,
-			                                                          avgRating)
-			testRatingList['hybrid'] = rating.predictTestRatings(testRatingList, ratingTable, hybridScores, avgRating)
+			pearsonTest = engine.predictAndEvaluate("pearson", testRatingList, ratingTable, pearsonScores, avgRating, NEIGHBOURS_COUNT)
+			pipTest = engine.predictAndEvaluate("pip", testRatingList, ratingTable, pipScores, avgRating, NEIGHBOURS_COUNT)
+			personalityTest = engine.predictAndEvaluate("personality", testRatingList, ratingTable, personalityScores, avgRating, NEIGHBOURS_COUNT)
+			hybridTest = engine.predictAndEvaluate("hybrid", testRatingList, ratingTable, hybridScores, avgRating, NEIGHBOURS_COUNT)
 			
-			# Tests
 			testLabels = ['Specificity', 'Precision', 'Recall  ', 'Accuracy', 'MAE     ', 'RMSE     ']
-			pearsonTest = metrics.specificity_precision_recall_accuracy(testRatingList['rating'],
-			                                                            testRatingList['pearson'])
-			personalityTest = metrics.specificity_precision_recall_accuracy(testRatingList['rating'],
-			                                                                testRatingList['personality'])
-			hybridTest = metrics.specificity_precision_recall_accuracy(testRatingList['rating'],
-			                                                           testRatingList['hybrid'])
-			
-			pearsonTest.extend([metrics.mae(testRatingList['rating'], testRatingList['pearson']),
-			                    metrics.rmse(testRatingList['rating'], testRatingList['pearson'])])
-			
-			personalityTest.extend([metrics.mae(testRatingList['rating'], testRatingList['personality']),
-			                        metrics.rmse(testRatingList['rating'], testRatingList['personality'])])
-			
-			hybridTest.extend([metrics.mae(testRatingList['rating'], testRatingList['hybrid']),
-			                   metrics.rmse(testRatingList['rating'], testRatingList['hybrid'])])
 			
 			pprint("-> Ratings Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
 		pprint("Test Scores", symbolCount = 21, sepCount = 1)
-		print("Method\t", "Pearson", "Prsnlty", "Hybrid", sep = "\t\t\t")
+		print("Method\t",
+		      "Pearson",
+		      "PIP",
+		      "Prsnlty",
+		      "Hybrid",
+		      sep = "\t\t\t")
 		
 		for i in range(len(testLabels)):
-			print(testLabels[i], "%.4f" % pearsonTest[i], "%.4f" % personalityTest[i], "%.4f" % hybridTest[i],
+			print(testLabels[i],
+			      "%.4f" % pearsonTest[i],
+			      "%.4f" % pipTest[i],
+			      "%.4f" % personalityTest[i],
+			      "%.4f" % hybridTest[i],
 			      sep = '\t\t\t')
 		
 		pprint('', symbolCount = 29, sepCount = 0)
