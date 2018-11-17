@@ -4,8 +4,10 @@ import sys
 
 """
 Run Modes:
-TEST_MODE:  For Testing
+GENRE_MODE: Top N Movies of Given Genre(s)
 INTERACTIVE_MODE: For User Interaction
+TOPN_MODE: Top N Movies
+TEST_MODE:  For Testing
 """
 
 if __name__ == "__main__":

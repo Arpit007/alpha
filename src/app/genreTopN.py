@@ -61,7 +61,7 @@ def run():
 	del genreList
 	
 	# Get Genre ID
-	genre = input('Select Genre: ').strip()
+	genre = input('Select Genre(s): ').strip().replace(' ', ',')
 	genre = [int(ele) for ele in genre.split(',')]
 	movieData = movieData[movieData.apply(lambda x: all(ele in x['genre'] for ele in genre), axis = 1)]
 	print('%d Movies Found' % len(movieData))
