@@ -16,17 +16,20 @@ class BaseMethod(ABC):
 	def calculate(self, ratingTable, avgRating, **params):
 		pass
 	
+	def predict(self, ratingTable, avgRating, testRatingList, k):
+		return predictTestRatings(testRatingList, ratingTable, self.score, avgRating, k)
+	
 	def predict_evaluate(self, ratingTable, avgRating, testRatingList, k, **params):
 		pprint("Evaluating %s Method" % self.name)
 		
 		if self.score is None:
 			self.calculate(ratingTable, avgRating, **params)
 		
-		# Todo: Why?
-		testRatingList[self.task] = predictTestRatings(testRatingList, ratingTable, self.score, avgRating, k)
+		prediction = self.predict(ratingTable, avgRating, testRatingList, k)
 		
-		testScores = metrics.specificity_precision_recall_accuracy(testRatingList['rating'], testRatingList[self.task])
+		testScores = metrics.specificity_precision_recall_accuracy(testRatingList['rating'], prediction)
 		
-		testScores.extend([metrics.mae(testRatingList['rating'], testRatingList[self.task]),
-		                   metrics.rmse(testRatingList['rating'], testRatingList[self.task])])
+		testScores.extend([metrics.mae(testRatingList['rating'], prediction),
+		                   metrics.rmse(testRatingList['rating'], prediction)])
+		
 		self.metrics = testScores

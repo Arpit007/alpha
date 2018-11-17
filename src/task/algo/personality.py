@@ -14,6 +14,7 @@ class Personality(BaseMethod):
 		if ratingTable is not None:
 			self.calculate(ratingTable, avgRating, **params)
 	
+	# Personality Score between 2 Users
 	def __personalityScore(self, user1, user2, persScores):
 		if user1 == user2:
 			return 0.0
@@ -45,7 +46,8 @@ class Personality(BaseMethod):
 		
 		return score
 	
-	def __personalityScore2Users(self, userId, ratingTable, persScores):
+	# Personality Score of a User with other Users
+	def __personalityScoreUsers(self, userId, ratingTable, persScores):
 		pScores = ratingTable.columns.map(lambda user: self.__personalityScore(userId, user, persScores))
 		
 		return pScores
@@ -54,6 +56,6 @@ class Personality(BaseMethod):
 		pprint('Calculating %s Scores' % self.name)
 		personalityScoresFrame = pd.DataFrame(index = ratingTable.columns)
 		for i in ratingTable.columns:
-			personalityScoresFrame[i] = self.__personalityScore2Users(i, ratingTable, params["persScores"])
+			personalityScoresFrame[i] = self.__personalityScoreUsers(i, ratingTable, params["persScores"])
 		
 		self.score = personalityScoresFrame

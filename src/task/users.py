@@ -1,6 +1,4 @@
 import pandas as pd
-import numpy as np
-
 
 def getUserCount(ratingTable):
 	return len(ratingTable.columns)

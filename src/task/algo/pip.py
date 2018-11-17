@@ -2,8 +2,7 @@ import pandas as pd
 
 from src.task.algo.baseMethod import BaseMethod
 from src.task.users import getUserRatedItems
-from src.utils.misc import normalizeScore
-from src.utils.misc import pprint
+from src.utils.misc import normalizeScore, pprint
 
 
 class Pip(BaseMethod):
@@ -15,6 +14,7 @@ class Pip(BaseMethod):
 		if ratingTable is not None:
 			self.calculate(ratingTable, avgRating, **params)
 	
+	# Pip Score between two ratings of an Item
 	def __pip(self, r1, r2, rAvg, rMin = 1, rMax = 5):
 		"""
 		PIP Function
@@ -47,7 +47,8 @@ class Pip(BaseMethod):
 		pipScore = proximity * impact * popularity
 		return pipScore
 	
-	def __pipScore(self, user1, user2, userRatings, ratingTable, itemsAvgRating):
+	# Pip Score between 2 Users
+	def __pipScore2Users(self, user1, user2, userRatings, ratingTable, itemsAvgRating):
 		if user1 == user2:
 			return 0
 		
@@ -61,10 +62,11 @@ class Pip(BaseMethod):
 		
 		return score
 	
-	def __pipScore2Users(self, userId, ratingTable, itemsAvgRating):
+	# Pip Score of a User with other Users
+	def __pipScoreUsers(self, userId, ratingTable, itemsAvgRating):
 		userRated = getUserRatedItems(ratingTable, userId)
 		
-		pScores = ratingTable.columns.map(lambda user: self.__pipScore(userId, user, userRated, ratingTable, itemsAvgRating))
+		pScores = ratingTable.columns.map(lambda user: self.__pipScore2Users(userId, user, userRated, ratingTable, itemsAvgRating))
 		
 		return pScores
 	
@@ -73,7 +75,7 @@ class Pip(BaseMethod):
 		
 		pipScoresFrame = pd.DataFrame(index = ratingTable.columns)
 		for i in ratingTable.columns:
-			pipScoresFrame[i] = self.__pipScore2Users(i, ratingTable, params["itemsAvgRating"])
+			pipScoresFrame[i] = self.__pipScoreUsers(i, ratingTable, params["itemsAvgRating"])
 			pipScoresFrame[i] = normalizeScore(pipScoresFrame[i])
 		
 		self.score = pipScoresFrame

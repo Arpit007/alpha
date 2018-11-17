@@ -1,5 +1,6 @@
-import pandas as pd
 import sys
+
+import pandas as pd
 
 __DATASET_PATH = 'dataset/tripadvisor/%s.csv'
 
@@ -18,8 +19,8 @@ def getRatingsList(key):
 
 
 def getRatingTable(ratingList):
-	return pd.pivot_table(data = ratingList, index = 'itemId', columns = 'userId', values = 'rating',
-	                      fill_value = 0)
+	return pd.pivot_table(
+		data = ratingList, index = 'itemId', columns = 'userId', values = 'rating', fill_value = 0)
 
 
 def getItemsDataSet():
@@ -36,7 +37,6 @@ def getPersonalityDataset():
 
 
 def getIRatingList():
-	
 	print("Hi, Select from the following Options:")
 	keys = list(DATASETS.keys())
 	for index, key in enumerate(keys, 1):
@@ -56,6 +56,7 @@ def getIRatingList():
 	ratingList = getRatingsList(key)
 	
 	return ratingList, key
+
 
 def minimizeSet(ratingList, persScoreList, minItemRatedCount, minUserRateCount):
 	items = ratingList.groupby('itemId').agg({ 'itemId': 'count' }).rename(columns = { 'itemId': 'count' })

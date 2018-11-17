@@ -1,9 +1,8 @@
 import numpy as np
-from src.task import dataset
-from src.task import rating
-from src.task import algo
+
+from src.task import algo, dataset, rating
 from src.utils import splitting
-from src.utils.misc import pprint
+from src.utils.misc import COLUMN_LENGTH, getRowFormat, pprint
 from src.utils.timing import Timing
 
 """
@@ -43,7 +42,7 @@ def run():
 		if SHOULD_MINIMIZE_SET is True:
 			ratingList, persScoreList = dataset.minimizeSet(ratingList, persScoreList, MINIMUM_ITEM_RATED_COUNT, MINIMUM_USER_RATE_COUNT)
 		
-		testRatingList, trainRatingList = splitting.test_inPlaceTrain_split_Frame(
+		testRatingList, trainRatingList = splitting.test_train_inPlaceSplit_Frame(
 			ratingList, 1, relativeSplit = False, shuffle = SHOULD_SHUFFLE, random_state = RANDOM_STATE)
 		
 		ratingTable = dataset.getRatingTable(trainRatingList)
@@ -59,17 +58,17 @@ def run():
 			
 			# Calculating Scores
 			methods = {
-				algo.Pearson.TASK: algo.Pearson(ratingTable, avgRating),
-				algo.Pip.TASK: algo.Pip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
+				# algo.Pearson.TASK: algo.Pearson(ratingTable, avgRating),
+				# algo.Pip.TASK: algo.Pip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
 				algo.MPip.TASK: algo.MPip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
-				algo.Personality.TASK: algo.Personality(ratingTable, avgRating, persScores = persScoreList)
+				# algo.Personality.TASK: algo.Personality(ratingTable, avgRating, persScores = persScoreList)
 			}
-			methods["pearPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
-			                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
-			methods["pipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
-			                                 algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
-			methods["mpipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.MPip.TASK],
-			                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			# methods["pearPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
+			#                                   algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			# methods["pipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
+			#                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			# methods["mPipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.MPip.TASK],
+			#                                   algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
 			
 			pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
@@ -82,14 +81,16 @@ def run():
 			
 			pprint("-> Ratings Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
-		pprint("Test Scores", symbolCount = 47, sepCount = 0)
-		
 		testLabels = ['Method', 'Specificity', 'Precision', 'Recall', 'Accuracy', 'MAE', 'RMSE']
-		row_format = "{:>15}" * len(testLabels)
-		print(row_format.format(*testLabels))
+		
+		resultLabel = " Test Scores "
+		pprint(resultLabel, symbolCount = int((COLUMN_LENGTH * len(testLabels) - len(resultLabel)) / 2))
+		
+		rowFormat = getRowFormat(len(testLabels))
+		
+		print(rowFormat.format(*testLabels))
 		
 		for method in methods.values():
-			print(row_format.format(method.name, *["%.4f" % val for val in method.metrics]))
+			print(rowFormat.format(method.name, *["%.4f" % val for val in method.metrics]))
 		
-		pprint("*" * (15 * len(testLabels)))
-		print("\n\n")
+		print("*" * (COLUMN_LENGTH * len(testLabels)), end = "\n\n\n")

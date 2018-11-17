@@ -1,8 +1,6 @@
 import numpy as np
-from src.task import dataset
-from src.task import users
-from src.task import rating
-from src.task.algo import Pearson, Personality, Hybrid
+
+from src.task import algo, dataset, rating, users
 from src.utils.misc import pprint
 from src.utils.timing import Timing
 
@@ -37,9 +35,9 @@ def run():
 	sparsity = 1 - len(ratingList) / np.prod(ratingTable.shape)
 	pprint("-> Sparsity: %f%%" % float(sparsity * 100))
 	
-	pearson = Pearson()
-	personality = Personality()
-	hybrid = Hybrid()
+	pearson = algo.Pearson()
+	personality = algo.Personality()
+	hybrid = algo.Hybrid()
 	
 	# Calculate Timings of High Computation Tasks
 	with Timing() as startTime:
@@ -56,7 +54,7 @@ def run():
 		
 		# Calculating Hybrid Scores
 		pprint('Calculating Hybrid Scores')
-		hybrid.calculate(pearsonScores,avgRating, algo1 = pearson, algo2 = personality, alpha = HYBRID_ALPHA)
+		hybrid.calculate(pearsonScores, avgRating, algo1 = pearson, algo2 = personality, alpha = HYBRID_ALPHA)
 		
 		pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 	

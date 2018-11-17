@@ -15,6 +15,7 @@ class Pearson(BaseMethod):
 		if ratingTable is not None:
 			self.calculate(ratingTable, avgRating, **params)
 	
+	# Pearson Score between 2 Users
 	def __pearsonScore(self, user1, user2, userRatings, ratingTable, avgRating, gamma = 5):
 		if user1 == user2:
 			return 0.0
@@ -62,7 +63,8 @@ class Pearson(BaseMethod):
 		
 		return penalisedScore
 	
-	def __pearsonScore2Users(self, userId, ratingTable, avgRating, gamma = 5):
+	# Pearson Score of a User with other Users
+	def __pearsonScoreUsers(self, userId, ratingTable, avgRating, gamma = 5):
 		userRated = getUserRatedItems(ratingTable, userId)
 		
 		pScores = ratingTable.columns.map(lambda user: self.__pearsonScore(userId, user, userRated, ratingTable, avgRating, gamma))
@@ -74,6 +76,6 @@ class Pearson(BaseMethod):
 		
 		pearsonScoresFrame = pd.DataFrame(index = ratingTable.columns)
 		for i in ratingTable.columns:
-			pearsonScoresFrame[i] = self.__pearsonScore2Users(i, ratingTable, avgRating)
+			pearsonScoresFrame[i] = self.__pearsonScoreUsers(i, ratingTable, avgRating)
 		
 		self.score = pearsonScoresFrame

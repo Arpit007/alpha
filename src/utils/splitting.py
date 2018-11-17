@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-from src.utils.misc import pprint
 from sklearn.utils import shuffle as shuffleData
+
+from src.utils.misc import pprint
 
 MAX_SEED = 2 ** 30
 
@@ -55,7 +56,7 @@ def test_train_split_Frame(ratingList, testSize = 0.2, relativeSplit = True, shu
 	return (testSet, trainSet)
 
 
-def test_inPlaceTrain_split_Frame(ratingList, testSize = 0.2, relativeSplit = True, shuffle = False, random_state = None,
+def test_train_inPlaceSplit_Frame(ratingList, testSize = 0.2, relativeSplit = True, shuffle = False, random_state = None,
                                   axis = 0):
 	test = []
 	train = []

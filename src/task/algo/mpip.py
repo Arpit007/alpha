@@ -2,12 +2,11 @@ import pandas as pd
 
 from src.task.algo.baseMethod import BaseMethod
 from src.task.users import getUserRatedItems
-from src.utils.misc import normalizeScore
-from src.utils.misc import pprint
+from src.utils.misc import normalizeScore, pprint
 
 
 class MPip(BaseMethod):
-	TASK = "mpip"
+	TASK = "mPip"
 	
 	def __init__(self, ratingTable = None, avgRating = None, **params):
 		super().__init__(MPip.TASK, "M-PIP")
@@ -15,6 +14,7 @@ class MPip(BaseMethod):
 		if ratingTable is not None:
 			self.calculate(ratingTable, avgRating, **params)
 	
+	# mPip Score between two ratings of an Item
 	def __mPip(self, r1, r2, rAvg, rMin = 1, rMax = 5):
 		"""
 			mPIP Function
@@ -46,7 +46,8 @@ class MPip(BaseMethod):
 		pipScore = proximity * impact * popularity
 		return pipScore
 	
-	def __mPipScore(self, user1, user2, userRatings, ratingTable, itemsAvgRating):
+	# mPip Score between 2 Users
+	def __mPipScore2Users(self, user1, user2, userRatings, ratingTable, itemsAvgRating):
 		if user1 == user2:
 			return 0
 		
@@ -60,10 +61,11 @@ class MPip(BaseMethod):
 		
 		return score
 	
-	def __mPipScore2Users(self, userId, ratingTable, itemsAvgRating):
+	# mPip Score of a User with other Users
+	def __mPipScoreUsers(self, userId, ratingTable, itemsAvgRating):
 		userRated = getUserRatedItems(ratingTable, userId)
 		
-		pScores = ratingTable.columns.map(lambda user: self.__mPipScore(userId, user, userRated, ratingTable, itemsAvgRating))
+		pScores = ratingTable.columns.map(lambda user: self.__mPipScore2Users(userId, user, userRated, ratingTable, itemsAvgRating))
 		
 		return pScores
 	
@@ -72,7 +74,7 @@ class MPip(BaseMethod):
 		
 		pipScoresFrame = pd.DataFrame(index = ratingTable.columns)
 		for i in ratingTable.columns:
-			pipScoresFrame[i] = self.__mPipScore2Users(i, ratingTable, params["itemsAvgRating"])
+			pipScoresFrame[i] = self.__mPipScoreUsers(i, ratingTable, params["itemsAvgRating"])
 			pipScoresFrame[i] = normalizeScore(pipScoresFrame[i])
 		
 		self.score = pipScoresFrame
