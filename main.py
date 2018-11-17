@@ -23,21 +23,13 @@ if __name__ == "__main__":
 	app = None
 	
 	if args.interactive:
-		from src.app import iMode
-		
-		app = iMode
+		from src.app import iMode as app
 	elif args.topn:
-		from src.app import topN
-		
-		app = topN
+		from src.app import topN as app
 	elif args.genre:
-		from src.app import genreTopN
-		
-		app = genreTopN
+		from src.app import genreTopN as app
 	else:
-		from src.app import testMode
-		
-		app = testMode
+		from src.app import testMode as app
 	
 	# Run the App
 	app.run()
