@@ -58,17 +58,17 @@ def run():
 			
 			# Calculating Scores
 			methods = {
-				# algo.Pearson.TASK: algo.Pearson(ratingTable, avgRating),
-				# algo.Pip.TASK: algo.Pip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
+				algo.Pearson.TASK: algo.Pearson(ratingTable, avgRating),
+				algo.Pip.TASK: algo.Pip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
 				algo.MPip.TASK: algo.MPip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
-				# algo.Personality.TASK: algo.Personality(ratingTable, avgRating, persScores = persScoreList)
+				algo.Personality.TASK: algo.Personality(ratingTable, avgRating, persScores = persScoreList)
 			}
-			# methods["pearPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
-			#                                   algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
-			# methods["pipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
-			#                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
-			# methods["mPipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.MPip.TASK],
-			#                                   algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			methods["pearPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
+			                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			methods["pipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
+			                                 algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			methods["mPipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.MPip.TASK],
+			                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
 			
 			pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
