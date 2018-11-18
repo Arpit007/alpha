@@ -35,26 +35,25 @@ def run():
 	sparsity = 1 - len(ratingList) / np.prod(ratingTable.shape)
 	pprint("-> Sparsity: %f%%" % float(sparsity * 100))
 	
-	pearson = algo.Pearson()
 	personality = algo.Personality()
+	mpip = algo.MPip()
 	hybrid = algo.Hybrid()
 	
 	# Calculate Timings of High Computation Tasks
 	with Timing() as startTime:
-		# Get Users Average Rating
+		
+		# Get Average Ratings
 		avgRating = rating.getUsersAverageRating(ratingTable)
-		
-		# Calculating Pearson Scores
-		pprint('Calculating Pearson Scores')
-		pearsonScores = pearson.calculate(ratingTable, avgRating)
-		
+		itemsAvgRating = rating.getItemsAverageRating(ratingTable)
+
 		# Calculating Personality Scores
-		pprint('Calculating Personality Scores')
 		personality.calculate(ratingTable, avgRating, persScores = persScoreList)
 		
+		# Calculating mPip Scores
+		mpip.calculate(ratingTable, avgRating, itemsAvgRating = itemsAvgRating)
+		
 		# Calculating Hybrid Scores
-		pprint('Calculating Hybrid Scores')
-		hybrid.calculate(pearsonScores, avgRating, algo1 = pearson, algo2 = personality, alpha = HYBRID_ALPHA)
+		hybrid.calculate(ratingTable, avgRating, algo1 = personality, algo2 = mpip, alpha = HYBRID_ALPHA)
 		
 		pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 	
