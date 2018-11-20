@@ -76,6 +76,6 @@ class Pip(BaseMethod):
 		pipScoresFrame = pd.DataFrame(index = ratingTable.columns)
 		for i in ratingTable.columns:
 			pipScoresFrame[i] = self.__pipScoreUsers(i, ratingTable, params["itemsAvgRating"])
-			pipScoresFrame[i] = normalizeScore(pipScoresFrame[i])
+			pipScoresFrame[i] = normalizeScore(pipScoresFrame[i]) -0.3
 		
 		self.score = pipScoresFrame
