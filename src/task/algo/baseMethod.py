@@ -11,6 +11,7 @@ class BaseMethod(ABC):
 		self.name = name
 		self.score = None
 		self.metrics = None
+		self.prediction = None
 	
 	@abstractmethod
 	def calculate(self, ratingTable, avgRating, **params):
@@ -25,11 +26,11 @@ class BaseMethod(ABC):
 		if self.score is None:
 			self.calculate(ratingTable, avgRating, **params)
 		
-		prediction = self.predict(ratingTable, avgRating, testRatingList, k)
+		self.prediction = self.predict(ratingTable, avgRating, testRatingList, k)
 		
-		testScores = metrics.specificity_precision_recall_accuracy(testRatingList['rating'], prediction)
+		testScores = metrics.specificity_precision_recall_accuracy(testRatingList['rating'], self.prediction)
 		
-		testScores.extend([metrics.mae(testRatingList['rating'], prediction),
-		                   metrics.rmse(testRatingList['rating'], prediction)])
+		testScores.extend([metrics.mae(testRatingList['rating'], self.prediction),
+		                   metrics.rmse(testRatingList['rating'], self.prediction)])
 		
 		self.metrics = testScores

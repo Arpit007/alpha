@@ -20,7 +20,7 @@ SHOULD_MINIMIZE_SET = True
 SHOULD_SHUFFLE = True
 MINIMUM_USER_RATE_COUNT = 4
 MINIMUM_ITEM_RATED_COUNT = 3
-NEIGHBOURS_COUNT = 5
+NEIGHBOURS_COUNT = 10
 RANDOM_STATE = 173967420
 HYBRID_ALPHA = 0.4
 MULTI_TYPE_TEST = False
@@ -36,11 +36,11 @@ def run():
 		
 		# Load the Datasets
 		ratingList = dataset.getRatingsList(key)
-		persScoreList = dataset.getPersonalityDataset()
+		persScores = dataset.getPersonalityDataset()
 		
 		# Minimise dataset for Optimization
 		if SHOULD_MINIMIZE_SET is True:
-			ratingList, persScoreList = dataset.minimizeSet(ratingList, persScoreList, MINIMUM_ITEM_RATED_COUNT, MINIMUM_USER_RATE_COUNT)
+			ratingList, persScores = dataset.minimizeSet(ratingList, persScores, MINIMUM_ITEM_RATED_COUNT, MINIMUM_USER_RATE_COUNT)
 		
 		testRatingList, trainRatingList = splitting.test_train_inPlaceSplit_Frame(
 			ratingList, 1, relativeSplit = False, shuffle = SHOULD_SHUFFLE, random_state = RANDOM_STATE)
@@ -60,15 +60,20 @@ def run():
 			methods = {
 				algo.Pearson.TASK: algo.Pearson(ratingTable, avgRating),
 				algo.Pip.TASK: algo.Pip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
-				algo.MPip.TASK: algo.MPip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
-				algo.Personality.TASK: algo.Personality(ratingTable, avgRating, persScores = persScoreList)
+				# algo.MPip.TASK: algo.MPip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating),
+				algo.Personality.TASK: algo.Personality(ratingTable, avgRating, persScores = persScores),
+				algo.PrPip.TASK: algo.PrPip(ratingTable, avgRating, persScores = persScores)
 			}
-			methods["pearPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
-			                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
-			methods["pipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
-			                                 algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
-			methods["mPipPers"] = algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.MPip.TASK],
-			                                  algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA)
+			hybrids = {
+				"pearPers": algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
+				                        algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA),
+				"pearPrPip": algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pearson.TASK],
+				                         algo2 = methods[algo.PrPip.TASK], alpha = HYBRID_ALPHA),
+				"pipPers": algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
+				                       algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA),
+				"pipPrPip": algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
+				                        algo2 = methods[algo.PrPip.TASK], alpha = HYBRID_ALPHA)
+			}
 			
 			pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
@@ -78,6 +83,10 @@ def run():
 			# Calculating Ratings and Metrics
 			for method in methods.values():
 				method.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT, itemsAvgRating = itemsAvgRating)
+			for method in hybrids.values():
+				method.predict_evaluate(ratingTable, avgRating, testRatingList, k = NEIGHBOURS_COUNT, itemsAvgRating = itemsAvgRating)
+			
+			methods = { **methods, **hybrids }
 			
 			pprint("-> Ratings Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
