@@ -74,8 +74,9 @@ class Pearson(BaseMethod):
 	def calculate(self, ratingTable, avgRating, **params):
 		pprint('Calculating %s Scores' % self.name)
 		
+		gamma = params["k"]
 		pearsonScoresFrame = pd.DataFrame(index = ratingTable.columns)
 		for i in ratingTable.columns:
-			pearsonScoresFrame[i] = self.__pearsonScoreUsers(i, ratingTable, avgRating)
+			pearsonScoresFrame[i] = self.__pearsonScoreUsers(i, ratingTable, avgRating, gamma)
 		
 		self.score = pearsonScoresFrame
