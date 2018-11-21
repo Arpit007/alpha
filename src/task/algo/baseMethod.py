@@ -18,7 +18,7 @@ class BaseMethod(ABC):
 		pass
 	
 	def predict(self, ratingTable, avgRating, testRatingList, k):
-		return predictTestRatings(testRatingList, ratingTable, self.score, avgRating, k)
+		self.prediction = predictTestRatings(testRatingList, ratingTable, self.score, avgRating, k)
 	
 	def predict_evaluate(self, ratingTable, avgRating, testRatingList, k, **params):
 		pprint("Evaluating %s Method" % self.name)
@@ -26,7 +26,7 @@ class BaseMethod(ABC):
 		if self.score is None:
 			self.calculate(ratingTable, avgRating, **params)
 		
-		self.prediction = self.predict(ratingTable, avgRating, testRatingList, k)
+		self.predict(ratingTable, avgRating, testRatingList, k)
 		
 		testScores = metrics.specificity_precision_recall_accuracy(testRatingList['rating'], self.prediction)
 		

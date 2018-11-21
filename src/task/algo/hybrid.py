@@ -21,8 +21,11 @@ class Hybrid(BaseMethod):
 		self.algo1 = params["algo1"]
 		self.algo2 = params["algo2"]
 	
-	def predict_evaluate(self, ratingTable, avgRating, testRatingList, k, **params):
+	def predict(self, ratingTable, avgRating, testRatingList, k):
 		self.prediction = self.algo1.prediction * self.alpha + self.algo2.prediction * (1 - self.alpha)
+	
+	def predict_evaluate(self, ratingTable, avgRating, testRatingList, k, **params):
+		self.predict(ratingTable, avgRating, testRatingList, k)
 		
 		testScores = metrics.specificity_precision_recall_accuracy(testRatingList['rating'], self.prediction)
 		

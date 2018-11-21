@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def getUserCount(ratingTable):
 	return len(ratingTable.columns)
 
@@ -37,6 +38,7 @@ def getUserItems(userId, cityId, ratingList, ratingTable):
 	userElements = ratingTable.loc[itemList][[userId]]
 	userElements = userElements.rename(columns = { userId: 'rating' })
 	userElements = userElements.reset_index()
+	userElements.insert(0, 'userId', [userId for i in range(len(userElements))])
 	
 	return userElements
 

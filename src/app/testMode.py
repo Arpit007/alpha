@@ -59,15 +59,15 @@ def run():
 			
 			# Calculating Scores
 			methods = {
-				# algo.Pearson.TASK: algo.Pearson(ratingTable, avgRating, k = NEIGHBOURS_COUNT),
+				algo.Pearson.TASK: algo.Pearson(ratingTable, avgRating, k = NEIGHBOURS_COUNT),
 				algo.Pip.TASK: algo.Pip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating, k = NEIGHBOURS_COUNT),
-				# algo.MPip.TASK: algo.MPip(ratingTable, avgRating, itemsAvgRating = itemsAvgRating, k = NEIGHBOURS_COUNT),
 				algo.Personality.TASK: algo.Personality(ratingTable, avgRating, persScores = persScores, k = NEIGHBOURS_COUNT),
-				# algo.PrPip.TASK: algo.PrPip(ratingTable, avgRating, persScores = persScores, k = NEIGHBOURS_COUNT)
 			}
 			hybrids = {
-				# "pipPrPip": algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
-				#                         algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA),
+				"pipPer": algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Pip.TASK],
+				                      algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA),
+				"persPer": algo.Hybrid(ratingTable, avgRating, algo1 = methods[algo.Personality.TASK],
+				                       algo2 = methods[algo.Personality.TASK], alpha = HYBRID_ALPHA),
 			}
 			
 			pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())

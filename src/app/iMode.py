@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 
 from src.task import algo, dataset, rating, users
@@ -20,7 +22,7 @@ HYBRID_ALPHA = 0.4
 SUGGESTIONS_COUNT = 5
 
 
-def run():
+def run(guiMode = False, scores = None):
 	# Load the Datasets
 	ratingList, key = dataset.getIRatingList()
 	persScoreList = dataset.getPersonalityDataset()
@@ -35,8 +37,13 @@ def run():
 	sparsity = 1 - len(ratingList) / np.prod(ratingTable.shape)
 	pprint("-> Sparsity: %f%%" % float(sparsity * 100))
 	
+	userId = 0
+	if guiMode is True:
+		persScoreList.loc[0] = scores
+		ratingTable.insert(0, userId, np.zeros(len(ratingTable)))
+	
 	personality = algo.Personality()
-	mpip = algo.MPip()
+	pip = algo.Pip()
 	hybrid = algo.Hybrid()
 	
 	# Calculate Timings of High Computation Tasks
@@ -45,36 +52,40 @@ def run():
 		# Get Average Ratings
 		avgRating = rating.getUsersAverageRating(ratingTable)
 		itemsAvgRating = rating.getItemsAverageRating(ratingTable)
-
+		
 		# Calculating Personality Scores
 		personality.calculate(ratingTable, avgRating, persScores = persScoreList)
 		
 		# Calculating mPip Scores
-		mpip.calculate(ratingTable, avgRating, itemsAvgRating = itemsAvgRating)
+		pip.calculate(ratingTable, avgRating, itemsAvgRating = itemsAvgRating)
 		
 		# Calculating Hybrid Scores
-		hybrid.calculate(ratingTable, avgRating, algo1 = personality, algo2 = mpip, alpha = HYBRID_ALPHA)
+		hybrid.calculate(ratingTable, avgRating, algo1 = personality, algo2 = pip, alpha = HYBRID_ALPHA)
 		
 		pprint("-> Scores Calculated in %.4f seconds" % startTime.getElapsedTime())
 	
 	while True:
-		# Get userId
-		userId = users.getIUserId(ratingTable)
 		
-		if userId == -1:
-			break
+		if guiMode is False:
+			# Get userId
+			userId = users.getIUserId(ratingTable)
 		
 		while True:
 			# Get City ID
 			cityId = users.getICityId(ratingList)
 			if cityId == -1:
+				if guiMode is True:
+					sys.exit(0)
 				break
 			
 			# Calculating Suggestion Ratings
 			userRatings = users.getUserItems(userId, cityId, ratingList, ratingTable)
-			userRatings['rating'] = rating.getOrCalculateUserItemRating(userId, userRatings, ratingTable,
-			                                                            hybrid.score, avgRating,
-			                                                            k = NEIGHBOURS_COUNT)
+			
+			personality.predict(ratingTable, avgRating, userRatings, k = NEIGHBOURS_COUNT)
+			pip.predict(ratingTable, avgRating, userRatings, k = NEIGHBOURS_COUNT)
+			hybrid.predict(ratingTable, avgRating, userRatings, k = NEIGHBOURS_COUNT)
+			
+			userRatings['rating'] = hybrid.prediction
 			userRatings = userRatings.sort_values('rating', ascending = False)[:SUGGESTIONS_COUNT]
 			
 			# Suggest Items
@@ -86,3 +97,5 @@ def run():
 				if item[1] <= 0:
 					break
 				print(i, item[0])
+		
+		guiMode = False

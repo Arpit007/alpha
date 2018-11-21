@@ -14,7 +14,8 @@ if __name__ == "__main__":
 	mp.freeze_support()
 	
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-g', '--genre', help = 'Genre Top N Mode', action = "store_true")
+	parser.add_argument('-c', '--categorise', help = 'Genre Top N Mode', action = "store_true")
+	parser.add_argument('-g', '--gui', help = 'GUI Based Interaction', action = "store_true")
 	parser.add_argument('-i', '--interactive', help = 'Interactive Mode', action = "store_true")
 	parser.add_argument('-n', '--topn', help = 'Top N Mode', action = "store_true")
 	parser.add_argument('-t', '--test', help = 'Test Mode', action = "store_true")
@@ -26,8 +27,10 @@ if __name__ == "__main__":
 		from src.app import iMode as app
 	elif args.topn:
 		from src.app import topN as app
-	elif args.genre:
+	elif args.categorise:
 		from src.app import genreTopN as app
+	elif args.gui:
+		from src.app import guiMode as app
 	else:
 		from src.app import testMode as app
 	
