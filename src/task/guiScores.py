@@ -3,18 +3,17 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-questionBase = "I see myself as someone who %s"
 questions = [
-	"is reserved",
-	"is generally trusting",
-	"tends to be lazy",
-	"is relaxed, handles stress well",
-	"has few artistic interests",
-	"is outgoing, socialable",
-	"tends to find fault with others",
-	"does a thorough job",
-	"gets nervous easily",
-	"has an active imagination"
+	"I'm the kind of person who prefers to be reserved.",
+	"I'm the kind of person who is generally trusting.",
+	"I'm a lazy kind of person.",
+	"I'm usually relaxed and handles stress well.",
+	"I have a few interests in artistic fields.",
+	"I'm a social and outgoing person.",
+	"I usually tend to find fault in others.",
+	"I'm the kind of person who does a job thoroughly.",
+	"I get nervous easily.",
+	"I have an active imagination."
 ]
 
 optionLabel = [
@@ -36,13 +35,14 @@ class MyApp(QWidget):
 		self.optionsCollection = pd.DataFrame(columns = [*[i + 1 for i in range(len(questions))]],
 		                                      index = [*[i + 1 for i in range(len(optionLabel))]])
 		self.setFixedSize(MyApp.window_width, MyApp.window_height)
+		self.setWindowTitle("Alpha")
 		self.initUI()
 	
 	def createLayout_QuestionGroup(self, index, question):
 		groupBox = QGroupBox("Question {}:".format(index), self)
 		groupLayout = QVBoxLayout(groupBox)
 		
-		questionLabel = QLabel(questionBase % question, self)
+		questionLabel = QLabel(question, self)
 		questionLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		questionLabel.setAlignment(Qt.AlignLeft)
 		
@@ -79,9 +79,6 @@ class MyApp(QWidget):
 		self.layout_SArea.addWidget(submitButton)
 		
 		self.layout_SArea.addStretch(1)
-	
-	def optionClicked(self, question, option):
-		print(question, option)
 	
 	def onSubmit(self):
 		answers = []

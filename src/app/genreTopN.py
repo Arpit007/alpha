@@ -15,6 +15,7 @@ def run():
 	movieList = pd.read_csv(DATASET_PATH % 'u.item', sep = '|', header = None).rename({ 0: 'itemId', 1: 'title' },
 	                                                                                  axis = 'columns')
 	genreList = pd.read_csv(DATASET_PATH % 'u.genre', sep = '|', names = ['genre', 'id'])
+	genreList = genreList.iloc[1:]
 	
 	# Calculate Movie Rating Count and Rating Average
 	grouper = metadata.groupby('itemId')

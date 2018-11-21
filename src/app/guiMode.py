@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import *
 
-from src.task.guiGetScores import MyApp
+from src.task.guiScores import MyApp
 
 
 def getScores():

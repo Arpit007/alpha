@@ -28,7 +28,7 @@ class BaseMethod(ABC):
 		
 		self.predict(ratingTable, avgRating, testRatingList, k)
 		
-		testScores = metrics.specificity_precision_recall_accuracy(testRatingList['rating'], self.prediction)
+		testScores = metrics.specificity_precision_accuracy(testRatingList['rating'], self.prediction)
 		
 		testScores.extend([metrics.mae(testRatingList['rating'], self.prediction),
 		                   metrics.rmse(testRatingList['rating'], self.prediction)])

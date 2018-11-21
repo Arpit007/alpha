@@ -34,8 +34,6 @@ class Pearson(BaseMethod):
 			return 0.0
 		
 		# Calculate Score
-		# user1Avg = np.average(corr1)
-		# user2Avg = np.average(corr2)
 		user1Avg = avgRating.loc[user1, 'avgRating']
 		user2Avg = avgRating.loc[user2, 'avgRating']
 		top = 0

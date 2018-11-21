@@ -25,13 +25,13 @@ def rmse(predVal, trueVal):
 	return np.sqrt(val)
 
 
-def specificity_precision_recall_accuracy(trueValue, testValue, cutoffThreshold = 3.5):
+def specificity_precision_accuracy(trueValue, testValue, cutoffThreshold = 3.5):
 	"""
-	Calculates Specificity, Precision, Recall, Accuracy
+	Calculates Specificity, Precision, Accuracy
 	:param trueValue: True Rating Values
 	:param testValue: Calculated Values
 	:param cutoffThreshold: Rating Threshold
-	:return: (specificity, precision, recall, accuracy)
+	:return: (specificity, precision, accuracy)
 	"""
 	truePositive = 0
 	trueNegative = 0
@@ -50,10 +50,9 @@ def specificity_precision_recall_accuracy(trueValue, testValue, cutoffThreshold 
 			else:
 				trueNegative += 1
 	
-	recall = truePositive / (truePositive + falseNegative) if (truePositive + falseNegative) != 0 else 0
 	specificity = trueNegative / (trueNegative + falsePositive) if (trueNegative + falsePositive) != 0 else 0
 	precision = truePositive / (truePositive + falsePositive) if (truePositive + falsePositive) != 0 else 0
 	accuracy = (truePositive + trueNegative) / (truePositive + trueNegative + falsePositive + falseNegative) \
 		if (truePositive + trueNegative + falsePositive + falseNegative) != 0 else 0
 	
-	return [specificity, precision, recall, accuracy]
+	return [specificity, precision, accuracy]

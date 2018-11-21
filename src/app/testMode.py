@@ -85,7 +85,7 @@ def run():
 			
 			pprint("-> Ratings Calculated in %.4f seconds" % startTime.getElapsedTime())
 		
-		testLabels = ['Method', 'Specificity', 'Precision', 'Recall', 'Accuracy', 'MAE', 'RMSE']
+		testLabels = ['Method', 'Specificity', 'Precision', 'Accuracy', 'MAE', 'RMSE']
 		
 		resultLabel = " Test Scores "
 		pprint(resultLabel, symbolCount = int((COLUMN_LENGTH * len(testLabels) - len(resultLabel)) / 2))
