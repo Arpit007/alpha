@@ -81,21 +81,24 @@ def run(guiMode = False, scores = None):
 			# Calculating Suggestion Ratings
 			userRatings = users.getUserItems(userId, cityId, ratingList, ratingTable)
 			
-			personality.predict(ratingTable, avgRating, userRatings, k = NEIGHBOURS_COUNT)
-			pip.predict(ratingTable, avgRating, userRatings, k = NEIGHBOURS_COUNT)
-			hybrid.predict(ratingTable, avgRating, userRatings, k = NEIGHBOURS_COUNT)
-			
-			userRatings['rating'] = hybrid.prediction
-			userRatings = userRatings.sort_values('rating', ascending = False)[:SUGGESTIONS_COUNT]
-			
-			# Suggest Items
-			pprint("Suggested %s" % key)
-			suggestions = itemsList.loc[userRatings['itemId']]['itemName']
-			ratings = userRatings['rating']
-			
-			for i, item in enumerate(zip(suggestions, ratings), 1):
-				if item[1] <= 0:
-					break
-				print(i, item[0])
+			if len(userRatings) != 0:
+				personality.predict(ratingTable, avgRating, userRatings, k = NEIGHBOURS_COUNT)
+				pip.predict(ratingTable, avgRating, userRatings, k = NEIGHBOURS_COUNT)
+				hybrid.predict(ratingTable, avgRating, userRatings, k = NEIGHBOURS_COUNT)
+				
+				userRatings['rating'] = hybrid.prediction
+				userRatings = userRatings.sort_values('rating', ascending = False)[:SUGGESTIONS_COUNT]
+				
+				# Suggest Items
+				pprint("Suggested %s" % key)
+				suggestions = itemsList.loc[userRatings['itemId']]['itemName']
+				ratings = userRatings['rating']
+				
+				for i, item in enumerate(zip(suggestions, ratings), 1):
+					if item[1] <= 0:
+						break
+					print(i, item[0])
+			else:
+				print("Not Hotels Found in the city :-(")
 		
 		guiMode = False
