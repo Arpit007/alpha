@@ -99,6 +99,6 @@ def run(guiMode = False, scores = None):
 						break
 					print(i, item[0])
 			else:
-				print("Not Hotels Found in the city :-(")
+				print("No Hotels Found in the city :-(")
 		
 		guiMode = False
